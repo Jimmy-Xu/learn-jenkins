@@ -1,0 +1,18 @@
+{
+	"auths": {
+		"https://index.docker.io/v1/": {
+			"auth": "",
+			"email": ""
+		}
+	},
+	"clouds": {
+		"tcp://147.75.195.39:6443": {
+			"accesskey": "",
+			"secretkey": ""
+		},
+		"tcp://us-west-1.hyper.sh:443": {
+			"accesskey": "",
+			"secretkey": ""
+		}
+	}
+}
