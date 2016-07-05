@@ -1,6 +1,29 @@
 Jenkins插件开发
 ==============
 
+- [开发环境需求](#开发环境需求)
+- [检查环境](#检查环境)
+	- [检查JDK](#检查jdk)
+	- [检查Maven](#检查maven)
+- [开发步骤](#开发步骤)
+	- [步骤1: 设置Maven环境](#步骤1-设置maven环境)
+	- [步骤2: 生成插件框架](#步骤2-生成插件框架)
+	- [步骤3：IntelliJ IDEA中打开项目](#步骤3intellij-idea中打开项目)
+	- [步骤4: 修改pom.xml](#步骤4-修改pomxml)
+	- [步骤5: 测试编译，打包及安装](#步骤5-测试编译打包及安装)
+		- [编译](#编译)
+		- [测试](#测试)
+		- [打包](#打包)
+		- [安装](#安装)
+- [调试插件](#调试插件)
+	- [启动Jenkins服务](#启动jenkins服务)
+	- [Jenkins Web UI](#jenkins-web-ui)
+		- [初始化](#初始化)
+		- [查看已安装插件](#查看已安装插件)
+	- [配置插件](#配置插件)
+	- [使用插件](#使用插件)
+	- [查看插件源码](#查看插件源码)
+
 以创建`hyper-cloud-plugin`为例
 
 # 开发环境需求
@@ -159,6 +182,7 @@ Maven使用pom.xml来构建插件.所有Jenkins插件都基于如下POM：
 ## 步骤5: 测试编译，打包及安装
 
 - 编译：`mvn compile`
+- 测试：`mvn test`
 - 打包：`mvn package`
 - 安装：`mvn install`
 
@@ -177,9 +201,21 @@ $ mvn compile
 [INFO] ------------------------------------------------------------------------
 ```
 
+### 测试
+
+在编译基础上，多了运行测试用例(`src/test/java`)
+```
+$ mvn test
+...
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+...
+```
+
 ### 打包
 
-在`mvn compile`基础上，多了生成`*.hpi`文件到项目的`target`子目录下
+在`mvn test`基础上，多了生成`*.hpi`文件到项目的`target`子目录下
 ```
 $ mvn package
 ...
@@ -201,11 +237,11 @@ $ mvn install
 ```
 
 
-## 调试插件
+# 调试插件
 
 使用`mvn hpi:run`可以启动一个本地Jenkins Server，以便于开发调试.
 
-### 启动Jenkins服务
+## 启动Jenkins服务
 
 设置环境变量`MAVEN_OPTS`
 ```
@@ -256,16 +292,16 @@ This may also be found at: D:\Project\eclipse_workspace\learn-jenkins\plugin-dev
 ```
 
 
-### Jenkins Web UI
+## Jenkins Web UI
 
 浏览器中打开：`http://127.0.0.1:8080/jenkins/`,
 
-#### 初始化
+### 初始化
 
 - 如果`jenkins.version`指定为`1.651.3`,则无需初始化即可使用
 - 如果`jenkins.version`指定为`2.11`，则需要先使用上述`initial admin password`进行初始化，完成后可以使用
 
-#### 查看已安装插件
+### 查看已安装插件
 
 查看已安装插件: `Manage Jenkins -> Manage Plugins -> Installed`, 可以看到`Hyper_ Cloud Plugin`插件已安装  
 ![](image/debug-jenkins-plugin.PNG)
@@ -274,12 +310,12 @@ This may also be found at: D:\Project\eclipse_workspace\learn-jenkins\plugin-dev
 ![](image/http-proxy-config.PNG)
 
 
-### 配置插件
+## 配置插件
 
 Manage Jenkins -> Configure System  
 ![](image/config-jenkins-plugin.PNG)
 
-### 使用插件
+## 使用插件
 
 Create New job  
 ![](image/helloworld-job-1.PNG)
@@ -297,6 +333,6 @@ View build result in Console Output
 ![](image/helloworld-job-5.PNG)
 
 
-### 查看插件源码
+## 查看插件源码
 
 ![](image/helloworld-job-6.PNG)
