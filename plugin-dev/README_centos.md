@@ -24,39 +24,51 @@ Jenkins插件开发
 	- [查看插件源码](#查看插件源码)
 
 
-以创建`hyper-build-step-plugin`为例
+以创建`hyper-commons-plugin`为例
 
 
 # 开发环境需求
 
-- Ubuntu 16.04 LTS
+- CentOS 7.2.1511
 - install JDK 1.8
 - install maven 3
 
 ## 安装 JDK 1.8
 ```
-$ sudo apt-add-repository ppa:webupd8team/java
-$ sudo apt-get update
-$ sudo apt-get install oracle-java8-installer
+$ curl -L -O -H "Cookie: oraclelicense=accept-securebackup-cookie" -k https://edelivery.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-x64.rpm
+$ sudo yum install -y jdk-8u91-linux-x64.rpm
 $ java -version
 java version "1.8.0_91"
 Java(TM) SE Runtime Environment (build 1.8.0_91-b14)
 Java HotSpot(TM) 64-Bit Server VM (build 25.91-b14, mixed mode)
 
 //switch java version when multiple version installed
-$ sudo update-alternatives --config java
+$ sudo alternatives --config java
 ```
 
 ## 安装 Maven 3
 ```
-$ sudo apt-get install libmaven3-core-java maven
+$ sudo wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+$ sudo yum install -y apache-maven
 $ mvn --version
-Apache Maven 3.3.3
-Maven home: /usr/share/maven
+Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-11T00:41:47+08:00)
+Maven home: /usr/share/apache-maven
 Java version: 1.8.0_91, vendor: Oracle Corporation
-Java home: /usr/lib/jvm/java-8-oracle/jre
-Default locale: en_GB, platform encoding: UTF-8
-OS name: "linux", version: "4.4.0-21-generic", arch: "amd64", family: "unix"
+Java home: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.91-0.b14.el7_2.x86_64/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "3.10.0-327.el7.x86_64", arch: "amd64", family: "unix"
+```
+
+[FAQ 1] Error "conflicts with file from package"
+```
+Transaction check error:
+  file /usr/share/java/plexus/plexus-cipher.jar from install of apache-maven-0:3.3.9-1.el7eng.noarch conflicts with file from package plexus-cipher-1.7-5.el7.noarch
+  ...
+```
+**原因**: `yum install maven` 与 `yum install apache-maven` 有冲突
+**解决**:
+```
+$ sudo rpm -e maven maven-wagon aether-connector-wagon plexus-cipher plexus-sec-dispatcher
 ```
 
 # 开发步骤
@@ -111,17 +123,7 @@ add the following to your `~/.m2/settings.xml` (Windows users will find them in 
 $ mvn -U org.jenkins-ci.tools:maven-hpi-plugin:create
 ```  
 
-若出现
-```
-[WARNING] Failure to transfer org.jenkins-ci.tools:maven-hpi-plugin/maven-metadata.xml from https://repo.maven.apache.org/maven2 was cached in the local repository, resolution will not be reattempted until the update interval of central has elapsed or updates are forced. Original error: Could not transfer metadata org.jenkins-ci.tools:maven-hpi-plugin/maven-metadata.xml from/to central (https://repo.maven.apache.org/maven2): sun.security.validator.ValidatorException: No trusted certificate found
-```
-则执行如下命令行
-```
-$ mvn -U org.jenkins-ci.tools:maven-hpi-plugin:create -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true
-```
-
-
-![](image/ubuntu/create-mvn-plugin-framework.png)
+![](image/centos/create-mvn-plugin-framework.png)
 
 生成后的插件框架由如下部分组成:
 - pom.xml
@@ -151,13 +153,13 @@ Maven使用pom.xml来构建插件.所有Jenkins插件都基于如下POM：
 
 ## 步骤3：IntelliJ IDEA中打开项目
 
-![](image/ubuntu/import-mvn-project-1.PNG)
+![](image/centos/import-mvn-project-1.PNG)
 
-![](image/ubuntu/import-mvn-project-2.PNG)
+![](image/centos/import-mvn-project-2.PNG)
 
-![](image/ubuntu/import-mvn-project-3.PNG)
+![](image/centos/import-mvn-project-3.PNG)
 
-![](image/ubuntu/import-mvn-project-4.PNG)
+![](image/centos/import-mvn-project-4.PNG)
 
 
 ## 步骤4: 修改pom.xml
@@ -169,9 +171,9 @@ Maven使用pom.xml来构建插件.所有Jenkins插件都基于如下POM：
 ```
 为
 ```
-<name>Hyper_ Build Step Plugin</name>
-<description>Hyper_ Build Step Plugins for Jenkins</description>
-<url>https://wiki.jenkins-ci.org/display/JENKINS/Hyper_+Build+Step+Plugin</url>
+<name>Hyper_ Commons Plugin</name>
+<description>Hyper_ Commons Plugins for Jenkins</description>
+<url>https://wiki.jenkins-ci.org/display/JENKINS/Hyper_+Commons+Plugin</url>
 ```
 
 修改如下
@@ -204,7 +206,7 @@ Maven使用pom.xml来构建插件.所有Jenkins插件都基于如下POM：
 $ mvn compile
 ...
 [INFO] ------------------------------------------------------------------------
-[INFO] Building Hyper_ Build Step Plugin 1.0-SNAPSHOT
+[INFO] Building Hyper_ Commons Plugin 1.0-SNAPSHOT
 [INFO] ------------------------------------------------------------------------
 ...
 [INFO] ------------------------------------------------------------------------
@@ -230,9 +232,9 @@ $ mvn test
 ```
 $ mvn package
 ...
-[INFO] --- maven-hpi-plugin:1.115:hpi (default-hpi) @ hyperbuildstep ---
-[INFO] Generating hpi /home/xjimmy/hyper-build-step/target/hyperbuildstep.hpi
-[INFO] Building jar: /home/xjimmy/hyper-build-step/target/hyperbuildstep.hpi
+[INFO] Assembling webapp hypercommons in /home/xjimmy/hyper-commons-plugin/target/hypercommons
+[INFO] Generating hpi /home/xjimmy/hyper-commons-plugin/target/hypercommons.hpi
+[INFO] Building jar: /home/xjimmy/hyper-commons-plugin/target/hypercommons.hpi
 ...
 ```
 
@@ -243,7 +245,7 @@ $ mvn package
 [INFO] BUILD FAILURE
 [INFO] ------------------------------------------------------------------------
 ...
-[ERROR] Failed to execute goal org.codehaus.mojo:animal-sniffer-maven-plugin:1.14:check (check) on project hyperbuildstep:
+[ERROR] Failed to execute goal org.codehaus.mojo:animal-sniffer-maven-plugin:1.14:check (check) on project hypercommons:
 Execution check of goal org.codehaus.mojo:animal-sniffer-maven-plugin:1.14:check failed:
 For artifact {org.codehaus.mojo.signature:java18:null:signature}: The version cannot be empty. -> [Help 1]
 ```
@@ -264,10 +266,10 @@ For artifact {org.codehaus.mojo.signature:java18:null:signature}: The version ca
 [INFO] BUILD FAILURE
 [INFO] ------------------------------------------------------------------------
 ...
-[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.18.1:
-test (default-test) on project hyperbuildstep: There are test failures.
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.18.1:test (default-test) on project hypercommons:
+There are test failures.
 [ERROR]
-[ERROR] Please refer to /home/xjimmy/hyper-build-step/target/surefire-reports for the individual test results.
+[ERROR] Please refer to /home/xjimmy/hyper-commons-plugin/target/surefire-reports for the individual test results.
 [ERROR] -> [Help 1]
 ```
 **原因**：测试用例为空  
@@ -283,12 +285,13 @@ $ mvn package -DskipTests
 ```
 $ mvn install
 ...
-[INFO] Installing /home/xjimmy/hyper-build-step/target/hyperbuildstep.hpi to
- /home/xjimmy/.m2/repository/sh/hyper/plugins/hyperbuildstep/1.0-SNAPSHOT/hyperbuildstep-1.0-SNAPSHOT.hpi
-[INFO] Installing /home/xjimmy/hyper-build-step/pom.xml to
- /home/xjimmy/.m2/repository/sh/hyper/plugins/hyperbuildstep/1.0-SNAPSHOT/hyperbuildstep-1.0-SNAPSHOT.pom
-[INFO] Installing /home/xjimmy/hyper-build-step/target/hyperbuildstep.jar to
- /home/xjimmy/.m2/repository/sh/hyper/plugins/hyperbuildstep/1.0-SNAPSHOT/hyperbuildstep-1.0-SNAPSHOT.jar
+[INFO] --- maven-install-plugin:2.5.2:install (default-install) @ hypercommons ---
+[INFO] Installing /home/xjimmy/hyper-commons-plugin/target/hypercommons.hpi to
+ /home/xjimmy/.m2/repository/sh/hyper/plugins/hypercommons/1.0-SNAPSHOT/hypercommons-1.0-SNAPSHOT.hpi
+[INFO] Installing /home/xjimmy/hyper-commons-plugin/pom.xml to
+ /home/xjimmy/.m2/repository/sh/hyper/plugins/hypercommons/1.0-SNAPSHOT/hypercommons-1.0-SNAPSHOT.pom
+[INFO] Installing /home/xjimmy/hyper-commons-plugin/target/hypercommons.jar to
+ /home/xjimmy/.m2/repository/sh/hyper/plugins/hypercommons/1.0-SNAPSHOT/hypercommons-1.0-SNAPSHOT.jar
 ...
 ```
 
@@ -337,9 +340,9 @@ $ mvn hpi:run
 Jenkins initial setup is required. An admin user has been created and a password generated.
 Please use the following password to proceed to installation:
 
-8f7b0b644be8468cb1d3450b8f877ec6
+a2b54ccfd545438d90dfbcf8cadb4c7a
 
-This may also be found at: /home/xjimmy/hyper-build-step/work/secrets/initialAdminPassword
+This may also be found at: /home/xjimmy/hyper-commons-plugin/work/secrets/initialAdminPassword
 
 *************************************************************
 *************************************************************
@@ -364,7 +367,7 @@ This may also be found at: /home/xjimmy/hyper-build-step/work/secrets/initialAdm
 ### 查看已安装插件
 
 查看已安装插件: `Manage Jenkins -> Manage Plugins -> Installed`, 可以看到`Hyper_ Build Step Plugin`插件已安装  
-![](image/ubuntu/debug-jenkins-build-step-plugin.PNG)
+![](image/centos/debug-jenkins-commons-plugin.PNG)
 
 若安装其他插件，可以设置proxy以加快下载速度  
 ![](image/http-proxy-config.PNG)
@@ -373,7 +376,7 @@ This may also be found at: /home/xjimmy/hyper-build-step/work/secrets/initialAdm
 ## 配置插件
 
 Manage Jenkins -> Configure System  
-![](image/ubuntu/config-jenkins-plugin.PNG)
+![](image/centos/config-jenkins-plugin.PNG)
 
 ## 使用插件
 
@@ -390,9 +393,8 @@ Trigger build by manual
 ![](image/helloworld-job-4.PNG)
 
 View build result in Console Output  
-![](image/ubuntu/helloworld-job-5.PNG)
-
+![](image/centos/helloworld-job-5.PNG)
 
 ## 查看插件源码
 
-![](image/ubuntu/helloworld-job-6.PNG)
+![](image/centos/helloworld-job-6.PNG)

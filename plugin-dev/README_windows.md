@@ -110,7 +110,7 @@ add the following to your `~/.m2/settings.xml` (Windows users will find them in 
 ```
 $ mvn -U org.jenkins-ci.tools:maven-hpi-plugin:create
 ```  
-![](image/create-mvn-plugin-framework-win.png)
+![](image/windows/create-mvn-plugin-framework.png)
 
 生成后的插件框架由如下部分组成:
 - pom.xml
@@ -140,13 +140,13 @@ Maven使用pom.xml来构建插件.所有Jenkins插件都基于如下POM：
 
 ## 步骤3：IntelliJ IDEA中打开项目
 
-![](image/import-mvn-project-1.PNG)
+![](image/windows/import-mvn-project-1.PNG)
 
-![](image/import-mvn-project-2.PNG)
+![](image/windows/import-mvn-project-2.PNG)
 
-![](image/import-mvn-project-3.PNG)
+![](image/windows/import-mvn-project-3.PNG)
 
-![](image/import-mvn-project-4.PNG)
+![](image/windows/import-mvn-project-4.PNG)
 
 
 ## 步骤4: 修改pom.xml
@@ -304,7 +304,7 @@ This may also be found at: D:\Project\eclipse_workspace\learn-jenkins\plugin-dev
 ### 查看已安装插件
 
 查看已安装插件: `Manage Jenkins -> Manage Plugins -> Installed`, 可以看到`Hyper_ Cloud Plugin`插件已安装  
-![](image/debug-jenkins-plugin.PNG)
+![](image/windows/debug-jenkins-plugin.PNG)
 
 若安装其他插件，可以设置proxy以加快下载速度  
 ![](image/http-proxy-config.PNG)
@@ -313,7 +313,7 @@ This may also be found at: D:\Project\eclipse_workspace\learn-jenkins\plugin-dev
 ## 配置插件
 
 Manage Jenkins -> Configure System  
-![](image/config-jenkins-plugin.PNG)
+![](image/windows/config-jenkins-plugin.PNG)
 
 ## 使用插件
 
@@ -330,9 +330,9 @@ Trigger build by manual
 ![](image/helloworld-job-4.PNG)
 
 View build result in Console Output  
-![](image/helloworld-job-5.PNG)
+![](image/windows/helloworld-job-5.PNG)
 
 
 ## 查看插件源码
 
-![](image/helloworld-job-6.PNG)
+![](image/windows/helloworld-job-6.PNG)
