@@ -14,6 +14,9 @@ Run docker-slaves-plugin from source
 		- [install Maven](#install-maven)
 			- [for ubuntu](#for-ubuntu)
 			- [for centos](#for-centos)
+	- [install proxy](#install-proxy)
+		- [install privoxy](#install-privoxy)
+		- [install shadowsocks](#install-shadowsocks)
 	- [fetch plugin source](#fetch-plugin-source)
 	- [modify pom.xml](#modify-pomxml)
 	- [start Jenkins server](#start-jenkins-server)
@@ -37,6 +40,9 @@ Run docker-slaves-plugin from source
 - install docker
 - install JDK 1.8
 - install maven 3
+- install proxy(optional)
+  - shadowsocks (socks5 proxy)
+  - privoxy (convert socks5 to http proxy)
 
 ### install docker
 
@@ -64,7 +70,7 @@ https_proxy=http://localhost:8118
 update `EnvironmentFile` and `ExecStart`
 
 ```
-$ vi /lib/systemd/system/docker.service
+$ cat /lib/systemd/system/docker.service
 ...
 [Service]
 EnvironmentFile=-/etc/sysconfig/docker
@@ -72,15 +78,15 @@ ExecStart=/usr/bin/docker daemon $DOCKER_OPTS -H fd://
 ...
 ```
 
-**restart docker daemon**
+**restart daemon**
 ```
 //reload systemd
 $ sudo systemctl daemon-reload
 
-//restart docker daemon
+//restart daemon
 $ service docker restart
 
-//enable docker daemon autostart
+//enable daemon autostart
 $ sudo systemctl enable docker
 ```
 
@@ -115,7 +121,7 @@ https_proxy="http://localhost:8118/"
 update `EnvironmentFile` and `ExecStart`
 
 ```
-$ vi /lib/systemd/system/docker.service
+$ cat /lib/systemd/system/docker.service
 ...
 [Service]
 EnvironmentFile=-/etc/default/docker
@@ -123,16 +129,16 @@ ExecStart=/usr/bin/docker daemon $DOCKER_OPTS -H fd://
 ...
 ```
 
-**restart docker daemon**
+**restart daemon**
 
 ```
 //reload systemd
 $ sudo systemctl daemon-reload
 
-//restart docker daemon
+//restart daemon
 $ sudo service docker restart
 
-//enable docker daemon autostart
+//enable daemon autostart
 $ sudo systemctl enable docker
 ```
 
@@ -177,6 +183,106 @@ $ mvn --version
 $ sudo wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
 $ sudo yum install -y apache-maven
 $ mvn --version
+```
+
+## install proxy
+
+- shadowsocks local port: 1080
+- privoxy local port: 8118
+
+> if you want to run a shadowsocks server, please see this blog [Deploy a private shadowsocks container in 3 steps](https://blog.hyper.sh/deploy-a-private-shadowsocks-container-in-3-steps.html)
+
+### install privoxy
+
+**install**
+
+```
+//centos
+$ sudo yum install privoxy
+
+//ubuntu
+$ sudo apt-get install privoxy
+```
+
+**config /etc/privoxy/config**
+
+```
+$ sudo cat /etc/privoxy/config
+forward-socks5 / 127.0.0.1:1080 .
+listen-address  0.0.0.0:8118
+```
+
+**restart service**
+
+```
+$ sudo service privoxy restart
+
+//check service
+$ sudo service privoxy status
+```
+
+### install shadowsocks
+
+**install**
+
+```
+//centos
+$ sudo yum install python-pip
+$ sudo pip install shadowsocks
+
+//ubuntu
+$ sudo apt-get install python-pip
+$ sudo pip install shadowsocks
+$ sudo ln -s /usr/local/bin/sslocal /usr/bin/sslocal
+```
+
+**config /etc/shadowsocks/config.json**
+
+please replace `server` and `server_port`
+
+```
+$ cat /etc/shadowsocks/config.json
+{
+  "server"  : "x.x.x.x",
+  "server_port": 8388,
+  "local_port": 1080,
+  "password": "xxxxxxxx",
+  "timeout": 600,
+  "method": "aes-256-cfb"
+}
+```
+
+**config /lib/systemd/system/sslocal.service**
+
+```
+$ cat /lib/systemd/system/sslocal.service
+[Unit]
+Description=Daemon to start Shadowsocks Client
+Wants=network-online.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/sslocal -c /etc/shadowsocks/config.json --pid-file /var/run/sslocal.pid --log-file /var/log/sslocal.log
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**restart service**
+
+```
+//reload systemd
+$ sudo systemctl daemon-reload
+
+//restart service
+$ service sslocal restart
+
+//enable service autostart
+$ sudo systemctl enable sslocal
+
+//check service
+$ sudo service sslocal status
 ```
 
 ## fetch plugin source
