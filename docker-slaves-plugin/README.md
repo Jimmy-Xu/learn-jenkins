@@ -335,6 +335,7 @@ open http://127.0.0.1:8080/jenkins in Web Browser
 ```
 Manage Jenkins -> Manage Plugins -> Installed -> "Docker Slaves Plugin"
 ```
+![](image/installed-plugin.PNG)
 
 ### config plugin
 ```
@@ -342,22 +343,43 @@ Manage Jenkins -> Configure System -> Docker Slaves
   -> Docker Host URI  : tcp://127.0.0.1:2375(example)
   -> Docker API Client: Docker CLI
 ```
+![](image/config-plugin.PNG)
+
 
 ## job settings
 
 ### create job
-```
 
-```
+![](image/create-job.PNG)
+
 
 ### config job
-```
-```
+
+Run the build inside Docker containers
+
+![](image/config-job-1.PNG)
+
+
+Add Build Step
+
+![](image/config-job-2.PNG)
+
 
 ### build job
-```
-```
+
+![](image/trigger-build-now.PNG)
 
 ### view result
-```
-```
+
+Build status
+
+![](image/console-status.PNG)
+
+Docker Build Context
+
+![](image/docker-build-context.PNG)
+
+
+Console Output
+
+![](image/console-output.PNG)
