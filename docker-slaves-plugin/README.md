@@ -49,6 +49,7 @@ Run docker-slaves-plugin from source
 #### for centos(7.2)
 
 **install**
+
 ```
 $ sudo yum -y install docker
 ```
@@ -189,6 +190,9 @@ $ mvn --version
 
 - shadowsocks local port: 1080
 - privoxy local port: 8118
+
+![](image/docker-daemon-use-proxy.PNG)
+
 
 > if you want to run a shadowsocks server, please see this blog [Deploy a private shadowsocks container in 3 steps](https://blog.hyper.sh/deploy-a-private-shadowsocks-container-in-3-steps.html)
 
