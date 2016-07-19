@@ -1,6 +1,8 @@
 Use docker-slaves-plugin
 ========================
 
+This doc will show the usage of docker-slaves-plugin.
+
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [Prepare](#prepare)
@@ -18,6 +20,7 @@ Use docker-slaves-plugin
 		- [Config job](#config-job)
 		- [Build job](#build-job)
 		- [View build result](#view-build-result)
+- [Reference](#reference)
 
 <!-- /TOC -->
 
@@ -62,7 +65,7 @@ $ mvn package -DskipTests
 
 ## Start Jenkins Server for dev
 ```
-mvn hpi:run
+$ mvn hpi:run
 ```
 
 ## Open Jenkins Web UI
@@ -115,6 +118,19 @@ Add Build Step
 
 ![](../image/trigger-build-now.PNG)
 
+Every build will executre with at least 2 containers :
+- a plumbing 'jenkins-slave' container to run required Jenkins slave agent
+- user's build container
+
+```
+$ docker ps
+CONTAINER ID    IMAGE             COMMAND                  CREATED         STATUS        PORTS   NAMES
+6f1518d9b071    busybox           "/trampoline wait"       3 seconds ago   Up 2 seconds          dreamy_darwin
+b899096281c0    jenkinsci/slave   "java -Djava.io.tmpdi"   8 seconds ago   Up 7 seconds          grave_mclean
+```
+
+after finish build, these two container will be all removed.
+
 ### View build result
 
 Build status
@@ -129,3 +145,10 @@ Docker Build Context
 Console Output
 
 ![](../image/console-output.PNG)
+
+# Reference
+
+- **youtube** [Docker Slaves Plugin demos](https://www.youtube.com/watch?v=HbwgN0UTTxo)
+- **blog**  [Docker Slaves Jenkins plugin has been released !](http://blog.loof.fr/2016/04/docker-slaves-jenkins-plugin-has-been.html)
+- **Wiki** [Docker Slaves Plugin](https://wiki.jenkins-ci.org/display/JENKINS/Docker+Slaves+Plugin)
+- **github** [Dockins/docker-slaves-plugin](https://github.com/Dockins/docker-slaves-plugin)
