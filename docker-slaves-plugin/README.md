@@ -26,6 +26,10 @@ Run docker-slaves-plugin from source
 
 [view](doc/use-plugin.md)
 
-# Generate docker-slaves-plugin execution flow
+# Generate execution flow
 
 [view](doc/execution-flow.md)
+
+# docker cli log when execute job
+
+[view](doc/docker-cli-log.md)
