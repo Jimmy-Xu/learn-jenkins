@@ -20,8 +20,12 @@ Run docker-slaves-plugin from source
 
 >for speed up pull image
 
-[install shadowsocks and privoxy](doc/install-proxy.md)
+[view](doc/install-proxy.md)
 
 # Use docker-slaves-plugin
 
-[detail](doc/use-plugin.md)
+[view](doc/use-plugin.md)
+
+# Generate docker-slaves-plugin execution flow
+
+[view](doc/execution-flow.md)
