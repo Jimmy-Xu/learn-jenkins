@@ -1,0 +1,40 @@
+FROM evarga/jenkins-slave
+#Getting image from evarga repo
+
+ENV DEBIAN_FRONTEND noninteractive
+
+ARG PROXY
+ENV http_proxy=${PROXY:-}
+ENV https_proxy=${PROXY:-}
+
+RUN apt-get update
+RUN apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    wget
+
+RUN apt-get update && apt-get install -y software-properties-common python-software-properties && add-apt-repository ppa:webupd8team/java && apt-get update
+
+RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+RUN apt-get install -y oracle-java8-installer  oracle-java8-set-default
+RUN echo 'JAVA_HOME=/usr/lib/jvm/java-8-oracle' >> /etc/environment
+
+ARG SSH_PUB_KEY
+ENV SSH_PUB_KEY=${SSH_PUB_KEY:-}
+RUN mkdir /home/jenkins/.ssh
+RUN [ "${SSH_PUB_KEY}" != "" ] && (echo "ssh-rsa ${SSH_PUB_KEY}" >> /home/jenkins/.ssh/authorized_keys)
+
+#making sure, it has sudo access (if you want)
+RUN echo "jenkins  ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+ENV http_proxy=""
+ENV https_proxy=""
+
+# place the jenkins slave startup script into the container
+ADD slave-startup.sh /
+
+# Expose the standard SSH port
+EXPOSE 22
+
+CMD ["/slave-startup.sh"]

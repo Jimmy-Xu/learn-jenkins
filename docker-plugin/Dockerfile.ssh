@@ -1,0 +1,17 @@
+FROM centos:7.2.1511
+
+ADD conf/CentOS7-Base-163.repo /etc/yum.repos.d/CentOS7-Base-163.repo
+RUN yum install -y openssh-server
+RUN yum install -y policycoreutils
+RUN /usr/bin/ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key -C '' -N '' >&/dev/null && chmod 600 /etc/ssh/ssh_host_rsa_key && chmod 644 /etc/ssh/ssh_host_rsa_key.pub &&  /sbin/restorecon /etc/ssh/ssh_host_rsa_key.pub && \
+    /usr/bin/ssh-keygen -q -t rsa1 -f /etc/ssh/ssh_host_key -C '' -N '' >&/dev/null && chmod 600 /etc/ssh/ssh_host_key && chmod 644 /etc/ssh/ssh_host_key.pub &&  /sbin/restorecon /etc/ssh/ssh_host_key.pub && \
+    /usr/bin/ssh-keygen -q -t dsa -f /etc/ssh/ssh_host_dsa_key -C '' -N '' >&/dev/null && chmod 600 /etc/ssh/ssh_host_dsa_key && chmod 644 /etc/ssh/ssh_host_dsa_key.pub &&  /sbin/restorecon /etc/ssh/ssh_host_dsa_key.pub
+
+RUN adduser jenkins && echo "jenkins:jenkins" | chpasswd
+
+RUN sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config && \
+    sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
+
+EXPOSE 22
+
+CMD ["/usr/sbin/sshd", "-D"]
